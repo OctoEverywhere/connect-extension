@@ -1,33 +1,660 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "hello",
-    "version": "1.0.0",
-    "description": "The routes hello serves. Every path is relative to the mount the host assigns, and the host serves this document rebased under it at <mount>/openapi.json."
+    "title": "OctoEverywhere",
+    "version": "0.1.0",
+    "description": "Gadget monitoring routes relative to the module mount. The host authenticates requests; printer visibility and management rights are checked for the calling person."
   },
   "paths": {
-    "/hello": {
+    "/status": {
       "get": {
-        "operationId": "read-hello",
-        "summary": "What this module holds",
-        "description": "What the module holds, and the principal the host authorized, which is the host's answer and never a header the caller set. The host takes view_resource on the module's instance before this is called.",
+        "operationId": "get-status",
+        "summary": "Read monitoring status visible to the calling person",
         "responses": {
           "200": {
-            "description": "The module's answer.",
+            "description": "Request completed.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {"type": "string", "description": "One line the page shows."},
-                    "principal": {"type": "string", "description": "Who the host says is calling."}
-                  },
-                  "required": ["message", "principal"]
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
           }
+        },
+        "description": "Read monitoring status visible to the calling person. Requests use the host-authorized principal and never accept a caller-supplied principal."
+      }
+    },
+    "/settings/gadget": {
+      "post": {
+        "operationId": "save-gadget-settings",
+        "summary": "Validate and save the Gadget API key",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "api_key": {
+                    "type": "string",
+                    "minLength": 1,
+                    "writeOnly": true
+                  }
+                },
+                "required": [
+                  "api_key"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Request completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "description": "Validate and save the Gadget API key. Requests use the host-authorized principal and never accept a caller-supplied principal."
+      }
+    },
+    "/settings/connect": {
+      "post": {
+        "operationId": "save-connect-settings",
+        "summary": "Validate and save the Connect camera credential",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Must match the connect_url configured by the host."
+                  },
+                  "token": {
+                    "type": "string",
+                    "minLength": 1,
+                    "writeOnly": true
+                  }
+                },
+                "required": [
+                  "url",
+                  "token"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Request completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "description": "Validate and save the Connect camera credential. Requests use the host-authorized principal and never accept a caller-supplied principal."
+      }
+    },
+    "/printers/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1
+          }
         }
+      ],
+      "put": {
+        "operationId": "save-printer-settings",
+        "summary": "Configure monitoring for one printer",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrinterSettings"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Request completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "description": "Configure monitoring for one printer. Requests use the host-authorized principal and never accept a caller-supplied principal."
+      }
+    },
+    "/printers/{id}/test-camera": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      ],
+      "post": {
+        "operationId": "test-camera",
+        "summary": "Check the selected camera's fresh JPEG snapshot",
+        "responses": {
+          "200": {
+            "description": "Request completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The request was refused or could not be completed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "description": "Check the selected camera's fresh JPEG snapshot. Requests use the host-authorized principal and never accept a caller-supplied principal."
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Success": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "ok"
+        ]
+      },
+      "Problem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "status"
+        ]
+      },
+      "PrinterSettings": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "camera_id": {
+            "type": "string"
+          },
+          "auto_pause": {
+            "type": "boolean"
+          },
+          "warning_confidence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3
+          },
+          "pause_confidence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3
+          },
+          "warmup_seconds": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 1800,
+            "default": 180,
+            "description": "Minimum automatic warmup delay; extrusion telemetry is also used when available."
+          }
+        },
+        "required": [
+          "enabled",
+          "camera_id",
+          "auto_pause",
+          "warning_confidence",
+          "pause_confidence",
+          "warmup_seconds"
+        ],
+        "additionalProperties": false
+      },
+      "Camera": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "Printer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "job_id": {
+            "type": "string"
+          },
+          "job_name": {
+            "type": "string"
+          },
+          "progress": {
+            "type": "number",
+            "minimum": 0
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "camera_id": {
+            "type": "string"
+          },
+          "auto_pause": {
+            "type": "boolean"
+          },
+          "warning_confidence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3
+          },
+          "pause_confidence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3
+          },
+          "warmup_seconds": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 1800,
+            "default": 180,
+            "description": "Minimum automatic warmup delay; extrusion telemetry is also used when available."
+          },
+          "can_manage": {
+            "type": "boolean"
+          },
+          "cameras": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Camera"
+            }
+          },
+          "last_inspection_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "warning": {
+            "type": "boolean"
+          },
+          "pause_suggested": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "state",
+          "detail",
+          "job_id",
+          "job_name",
+          "progress",
+          "enabled",
+          "camera_id",
+          "auto_pause",
+          "warning_confidence",
+          "pause_confidence",
+          "warmup_seconds",
+          "can_manage",
+          "cameras",
+          "warning",
+          "pause_suggested"
+        ]
+      },
+      "HistoryEntry": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "printer_id": {
+            "type": "string"
+          },
+          "printer_name": {
+            "type": "string"
+          },
+          "job_name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          }
+        },
+        "required": [
+          "at",
+          "printer_id",
+          "printer_name",
+          "job_name",
+          "kind",
+          "message"
+        ]
+      },
+      "Status": {
+        "type": "object",
+        "properties": {
+          "configured": {
+            "type": "boolean"
+          },
+          "camera_configured": {
+            "type": "boolean"
+          },
+          "connect_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "can_manage": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          },
+          "printers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Printer"
+            }
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HistoryEntry"
+            }
+          }
+        },
+        "required": [
+          "configured",
+          "camera_configured",
+          "connect_url",
+          "can_manage",
+          "printers",
+          "history"
+        ]
       }
     }
   }

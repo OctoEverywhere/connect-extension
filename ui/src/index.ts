@@ -27,5 +27,5 @@ export default defineModule((host) => {
   // the manifest does not declare is refused at run time and the app drops
   // this module. The generator wrote both from one answer, so they agree; keep
   // them in step by hand after that.
-  host.register.page('hello', Page);
+  host.register.page('octoeverywhere', Page);
 });

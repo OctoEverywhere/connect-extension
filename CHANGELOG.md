@@ -1,17 +1,15 @@
 # Changelog
 
-What an operator sees change when they upgrade this module, newest release
-first. `version:` in `module.yaml` is the newest heading below.
-
-Write the entry in the same change as the code. One bullet per behaviour a
-person outside this repository can observe: a route, a setting, a screen, a
-refusal. Name the route and the setting key, never a function or a file.
-
-## 1.0.0 - 2026-11-17
+## 0.1.0 - 2026-11-17
 
 ### Added
 
-- `GET /hello` answers one line and the principal the host authorized.
-- The setting `message` sets the line that route answers with.
-- Hello: a page of its own, with an entry in the sidebar, showing what `GET /hello` answers:
-  the message and who asked.
+- OctoEverywhere page with per-printer Gadget monitoring, selected cameras, inspection status, and event history.
+- Gadget API-key validation and a scoped Connect credential for camera snapshots.
+- Automatic startup timing with a configurable warmup delay and extrusion telemetry when available.
+- Optional automatic pause using Gadget's pause recommendation and the current printer job.
+- Persistent print contexts, retry pacing, restart recovery, and visible account/camera failures.
+- Native builds for Linux amd64/arm64, macOS arm64, and Windows amd64.
+- PowerShell build/check/release commands alongside the Makefile.
+
+This beta's scope is AI failure detection. Remote access and broader OctoEverywhere notifications are planned separately.

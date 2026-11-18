@@ -4,7 +4,91 @@
  */
 
 export interface paths {
-    "/api/v1/modules/com.github.aux.prusa3d.prusa-connect-extension-example/hello": {
+    "/api/v1/modules/com.github.aux.octoeverywhere.connect-extension/printers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Configure monitoring for one printer
+         * @description Configure monitoring for one printer. Requests use the host-authorized principal and never accept a caller-supplied principal.
+         */
+        put: operations["save-printer-settings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/modules/com.github.aux.octoeverywhere.connect-extension/printers/{id}/test-camera": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check the selected camera's fresh JPEG snapshot
+         * @description Check the selected camera's fresh JPEG snapshot. Requests use the host-authorized principal and never accept a caller-supplied principal.
+         */
+        post: operations["test-camera"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/modules/com.github.aux.octoeverywhere.connect-extension/settings/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate and save the Connect camera credential
+         * @description Validate and save the Connect camera credential. Requests use the host-authorized principal and never accept a caller-supplied principal.
+         */
+        post: operations["save-connect-settings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/modules/com.github.aux.octoeverywhere.connect-extension/settings/gadget": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate and save the Gadget API key
+         * @description Validate and save the Gadget API key. Requests use the host-authorized principal and never accept a caller-supplied principal.
+         */
+        post: operations["save-gadget-settings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/modules/com.github.aux.octoeverywhere.connect-extension/status": {
         parameters: {
             query?: never;
             header?: never;
@@ -12,10 +96,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * What this module holds
-         * @description What the module holds, and the principal the host authorized, which is the host's answer and never a header the caller set. The host takes view_resource on the module's instance before this is called.
+         * Read monitoring status visible to the calling person
+         * @description Read monitoring status visible to the calling person. Requests use the host-authorized principal and never accept a caller-supplied principal.
          */
-        get: operations["read-hello"];
+        get: operations["get-status"];
         put?: never;
         post?: never;
         delete?: never;
@@ -27,7 +111,86 @@ export interface paths {
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: never;
+    schemas: {
+        Success: {
+            /** @constant */
+            ok: true;
+        };
+        Problem: {
+            type?: string;
+            title: string;
+            status: number;
+            detail?: string;
+            instance?: string;
+            code?: string;
+        };
+        PrinterSettings: {
+            enabled: boolean;
+            camera_id: string;
+            auto_pause: boolean;
+            /** @default 3 */
+            warning_confidence: number;
+            /** @default 3 */
+            pause_confidence: number;
+            /**
+             * @description Minimum automatic warmup delay; extrusion telemetry is also used when available.
+             * @default 180
+             */
+            warmup_seconds: number;
+        };
+        Camera: {
+            id: string;
+            name: string;
+        };
+        Printer: {
+            id: string;
+            name: string;
+            state: string;
+            detail: string;
+            job_id: string;
+            job_name: string;
+            progress: number;
+            enabled: boolean;
+            camera_id: string;
+            auto_pause: boolean;
+            /** @default 3 */
+            warning_confidence: number;
+            /** @default 3 */
+            pause_confidence: number;
+            /**
+             * @description Minimum automatic warmup delay; extrusion telemetry is also used when available.
+             * @default 180
+             */
+            warmup_seconds: number;
+            can_manage: boolean;
+            cameras: components["schemas"]["Camera"][];
+            /** Format: date-time */
+            last_inspection_at?: string;
+            quality?: number;
+            warning: boolean;
+            pause_suggested: boolean;
+        };
+        HistoryEntry: {
+            /** Format: date-time */
+            at: string;
+            printer_id: string;
+            printer_name: string;
+            job_name: string;
+            kind: string;
+            message: string;
+            quality?: number;
+        };
+        Status: {
+            configured: boolean;
+            camera_configured: boolean;
+            /** Format: uri */
+            connect_url: string;
+            can_manage: boolean;
+            error?: string;
+            printers: components["schemas"]["Printer"][];
+            history: components["schemas"]["HistoryEntry"][];
+        };
+    };
     responses: never;
     parameters: never;
     requestBodies: never;
@@ -36,7 +199,256 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    "read-hello": {
+    "save-printer-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PrinterSettings"];
+            };
+        };
+        responses: {
+            /** @description Request completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Success"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    "test-camera": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Request completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Success"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    "save-connect-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uri
+                     * @description Must match the connect_url configured by the host.
+                     */
+                    url: string;
+                    token: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Request completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Success"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    "save-gadget-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    api_key: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Request completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Success"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    "get-status": {
         parameters: {
             query?: never;
             header?: never;
@@ -45,18 +457,49 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The module's answer. */
+            /** @description Request completed. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        /** @description One line the page shows. */
-                        message: string;
-                        /** @description Who the host says is calling. */
-                        principal: string;
-                    };
+                    "application/json": components["schemas"]["Status"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The request was refused or could not be completed. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
                 };
             };
         };

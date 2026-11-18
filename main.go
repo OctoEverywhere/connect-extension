@@ -1,251 +1,265 @@
-// Command hello is a module with both halves: this process, which serves
-// one route, and a browser bundle under ui/, which draws on it.
-//
-// # The route
-//
-//	GET /hello   the line this module answers with, and who the host says is asking
-//
-// The path is relative to the mount, so a caller reaches it at
-// /api/v1/modules/com.github.aux.prusa3d.prusa-connect-extension-example/hello. The host decides who may call it
-// and then makes the call: view_resource on the instance for a read,
-// operate_resource for a write. This process checks no permission and holds no
-// grant.
-//
-// # Settings
-//
-// module.yaml declares every setting this module reads, each with its type, its
-// default and one sentence saying what it controls. The host merges the
-// operator's config block over those defaults and sends the result on
-// plugin.configure before the first request arrives. Nothing here reads an
-// environment variable: a setting an operator cannot see in the manifest is a
-// setting nobody can find.
-//
-// # Errors
-//
-// faults.go lists every error code of this module. The module answers a
-// request it cannot serve with one of those codes and its English title. It
-// never answers with a sentence alone, because a caller cannot check one.
-//
-// # Installing it
-//
-//	sh install.sh
-//
-// README.md says what that runs and why every change is a new install.
 package main
 
 import (
 	"context"
 	_ "embed"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"maps"
 	"net/http"
 	"os"
 	"os/signal"
 	"strings"
-	"sync/atomic"
+	"sync"
+	"syscall"
 
+	"github.com/octoeverywhere/connect-extension/internal/connect"
+	"github.com/octoeverywhere/connect-extension/internal/detection"
+	"github.com/octoeverywhere/connect-extension/internal/gadget"
+	"github.com/octoeverywhere/connect-extension/internal/storage"
 	"github.com/prusa3d/prusa-connect/sdk/extension"
-	"github.com/prusa3d/prusa-connect/sdk/fault"
 	"github.com/prusa3d/prusa-connect/sdk/routesapi"
 	"github.com/prusa3d/prusa-connect/sdk/wire"
 	"github.com/prusa3d/prusa-connect/sdk/wirerpc"
 )
 
-// manifestYAML is module.yaml, built into the binary. The host asks the child
-// what it is and refuses one whose name or version differs from the manifest
-// it installed (RESOURCE_MANIFEST_DISAGREES), so both are read from the
-// manifest itself rather than written a second time here: raising `version`
-// in module.yaml is the whole of a release.
-//
 //go:embed module.yaml
 var manifestYAML []byte
 
-// What this child reports when the host asks it what it is.
-//
-//nolint:gochecknoglobals // read once from the embedded manifest.
-var (
-	name    = manifestScalar(manifestYAML, "name")
-	release = extension.Version(manifestScalar(manifestYAML, "version"))
-)
-
-// manifestScalar is the value of a top-level `key: value` line of the
-// manifest, without a trailing comment or quotes. It is enough for the two
-// scalars above; the host reads the whole manifest with a YAML parser.
-func manifestScalar(document []byte, key string) string {
-	for _, line := range strings.Split(string(document), "\n") {
-		value, found := strings.CutPrefix(line, key+":")
-		if !found {
-			continue
-		}
-		if comment := strings.Index(value, " #"); comment >= 0 {
-			value = value[:comment]
-		}
-
-		return strings.Trim(strings.TrimSpace(value), `"'`)
-	}
-
-	return ""
-}
-
-// defaultMessage is the line the route answers with when the operator sets
-// nothing. It is the default of the `message` setting in module.yaml, and the
-// two are the same words on purpose: what the manifest publishes is what this
-// code does when nobody overrides it. TestTheManifestPublishesTheCodesDefault
-// holds them together.
-const defaultMessage = "Hello is serving."
-
-// Settings is what an operator writes under this instance's config block. The
-// host merges it over the defaults module.yaml declares and sends the result on
-// plugin.configure. A key this struct does not carry refuses the start, so a
-// typo is found before a request is.
-type Settings struct {
-	// Message is the line GET /hello answers with.
-	Message string `json:"message"`
-}
-
-// held is the settings this module is running on. It is an atomic value because
-// plugin.configure is answered on the wire goroutine and the routes are served
-// on others.
-//
-//nolint:gochecknoglobals // the one piece of state this skeleton has.
-var held atomic.Pointer[Settings]
-
-// settings is what this module is running on: what the host sent, or the
-// defaults this code holds when the host sent nothing.
-func settings() Settings {
-	if current := held.Load(); current != nil {
-		return *current
-	}
-
-	return Settings{Message: defaultMessage}
-}
-
-// openAPI is the fragment describing the route, with every path relative to
-// the mount. The host holds it to routesapi.ParseFragment at launch and serves
-// it rebased under the namespace, which is what cmd/generate-client-sdk reads
-// to type this module's surface.
-//
 //go:embed openapi.json
 var openAPI []byte
 
+var name = manifestScalar(manifestYAML, "name")
+var release = extension.Version(manifestScalar(manifestYAML, "version"))
+
+type Settings struct {
+	ConnectURL string `json:"connect_url"`
+}
+
+type application struct {
+	mu      sync.RWMutex
+	manager *detection.Manager
+	records *storage.Files
+}
+
+func manifestScalar(document []byte, key string) string {
+	for _, line := range strings.Split(string(document), "\n") {
+		if value, ok := strings.CutPrefix(line, key+":"); ok {
+			if i := strings.Index(value, " #"); i >= 0 {
+				value = value[:i]
+			}
+			return strings.Trim(strings.TrimSpace(value), `"'`)
+		}
+	}
+	return ""
+}
+
 func main() {
 	if err := run(); err != nil {
-		fmt.Fprintf(os.Stderr, "%s: %v\n", name, err)
+		fmt.Fprintln(os.Stderr, "OctoEverywhere stopped:", err)
 		os.Exit(1)
 	}
 }
 
-// run writes the handshake line and then serves frames until the host closes
-// the channel.
 func run() error {
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-
-	line, err := wire.Handshake{
-		Protocol: wire.ProtocolMajor,
-		MinMinor: wire.MinMinor,
-		MaxMinor: wire.MaxMinor,
-		Address:  wire.StdioAddress,
-	}.Line()
+	line, err := (wire.Handshake{Protocol: wire.ProtocolMajor, MinMinor: wire.MinMinor, MaxMinor: wire.MaxMinor, Address: wire.StdioAddress}).Line()
 	if err != nil {
-		return fmt.Errorf("render the handshake: %w", err)
+		return err
 	}
-
 	if _, err = os.Stdout.WriteString(line); err != nil {
-		return fmt.Errorf("write the handshake: %w", err)
+		return err
 	}
-
-	conn, err := wirerpc.NewConn(stdio{}, wirerpc.Options{
-		Role:    wirerpc.RoleChild,
-		Methods: methods(),
-	})
+	methods := wirerpc.Methods{}
+	conn, err := wirerpc.NewConn(stdio{}, wirerpc.Options{Role: wirerpc.RoleChild, Methods: methods})
 	if err != nil {
-		return fmt.Errorf("build the session: %w", err)
+		return err
 	}
-
-	// The pid is here because the host's log is the only place a person sees
-	// this process. Nothing on the wire carries it.
-	fmt.Fprintf(os.Stderr, "%s %s is serving on stdio as pid %d\n", name, release, os.Getpid())
-
-	if err = conn.Serve(ctx); err != nil {
-		return fmt.Errorf("serve: %w", err)
+	api, err := gadget.NewClient(gadget.Options{})
+	if err != nil {
+		return err
 	}
-
-	return nil
-}
-
-// methods is the lifecycle set every child answers, plus the one call that
-// carries this module's own HTTP surface.
-func methods() wirerpc.Methods {
-	return wirerpc.Methods{
+	app := &application{}
+	var worker sync.WaitGroup
+	maps.Copy(methods, wirerpc.Methods{
 		wirerpc.MethodInfo: func(context.Context, wirerpc.Call) (any, error) {
-			return routesapi.Describe(
-				wirerpc.Info{
-					Name:     name,
-					Version:  release,
-					Contract: wirerpc.Contract,
-					// Naming the call is what asks the host for the settings. A
-					// module that names none is never configured.
-					Serves: []wirerpc.Method{wirerpc.MethodConfigure},
-				}, openAPI)
+			return routesapi.Describe(wirerpc.Info{Name: name, Version: release, Contract: wirerpc.Contract, Serves: []wirerpc.Method{wirerpc.MethodConfigure}}, openAPI)
 		},
-		// The settings the host merged from module.yaml's defaults and this
-		// instance's config block, sent once before the first request.
-		wirerpc.MethodConfigure: wirerpc.Configure(func(_ context.Context, sent Settings) error {
-			if sent.Message == "" {
-				sent.Message = defaultMessage
+		wirerpc.MethodConfigure: wirerpc.ConfigureGranted(func(_ context.Context, s Settings, grants wirerpc.Grants) error {
+			if s.ConnectURL == "" {
+				s.ConnectURL = "http://127.0.0.1:8080"
 			}
-
-			held.Store(&sent)
-
+			checked, err := connect.NewCameraClient(s.ConnectURL, "configuration-validation")
+			if err != nil {
+				return err
+			}
+			checked.Close()
+			app.mu.Lock()
+			defer app.mu.Unlock()
+			if app.manager != nil {
+				return errors.New("extension was already configured")
+			}
+			records, err := storage.NewFiles(grants.Data)
+			if err != nil {
+				return err
+			}
+			app.records = records
+			app.manager = detection.New(records, connect.New(conn), api, func(url, token string) (detection.CameraSource, error) { return connect.NewCameraClient(url, token) }, s.ConnectURL)
+			worker.Add(1)
+			go func() { defer worker.Done(); app.manager.Run(ctx) }()
+			fmt.Fprintln(os.Stderr, "OctoEverywhere configured with private persistent storage")
 			return nil
 		}),
-		wirerpc.MethodShutdown: func(context.Context, wirerpc.Call) (any, error) {
-			fmt.Fprintf(os.Stderr, "%s was asked to stop\n", name)
-
-			return nil, nil
-		},
-		routesapi.MethodServe: routesapi.Serve(routes()),
+		wirerpc.MethodShutdown: func(context.Context, wirerpc.Call) (any, error) { stop(); return nil, nil },
+		routesapi.MethodServe:  routesapi.Serve(app.routes()),
+	})
+	fmt.Fprintf(os.Stderr, "OctoEverywhere %s started\n", release)
+	err = conn.Serve(ctx)
+	stop()
+	worker.Wait()
+	if app.records != nil {
+		if closeErr := app.records.Close(); closeErr != nil {
+			fmt.Fprintln(os.Stderr, "OctoEverywhere could not close its persistent storage")
+		}
 	}
+	if errors.Is(err, context.Canceled) || errors.Is(err, io.EOF) {
+		return nil
+	}
+	return err
 }
 
-// routes is the surface this module serves, written as any Go program writes
-// one. The paths carry no prefix: /hello here is
-// /api/v1/modules/com.github.aux.prusa3d.prusa-connect-extension-example/hello to a caller.
-func routes() http.Handler {
+func (a *application) routes() http.Handler {
 	mux := http.NewServeMux()
-
-	mux.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
-		answer(w, http.StatusOK, map[string]any{
-			"message": settings().Message,
-			// Who the host says is calling. It is the host's answer and not a
-			// header this process trusted.
-			"principal": routesapi.PrincipalOf(r),
+	handle := func(pattern string, write bool, fn func(*detection.Manager, http.ResponseWriter, *http.Request, string)) {
+		mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Cache-Control", "no-store")
+			principal := routesapi.PrincipalOf(r)
+			if principal == "" {
+				problem(w, 401, "AUTH_REQUIRED", "Sign in to Connect to use OctoEverywhere.")
+				return
+			}
+			a.mu.RLock()
+			m := a.manager
+			a.mu.RUnlock()
+			if m == nil {
+				problem(w, 503, "NOT_READY", "OctoEverywhere is starting. Try again shortly.")
+				return
+			}
+			if write && !m.CanManage(r.Context(), principal) {
+				problem(w, 403, "ACCESS_DENIED", "You do not have permission to configure this extension.")
+				return
+			}
+			fn(m, w, r, principal)
 		})
+	}
+	handle("GET /status", false, func(m *detection.Manager, w http.ResponseWriter, r *http.Request, p string) {
+		status, err := m.Status(r.Context(), p)
+		if err != nil {
+			problem(w, 503, "CONNECT_UNAVAILABLE", err.Error())
+			return
+		}
+		answer(w, 200, status)
 	})
-
-	// Everything else is this module's own refusal. It carries the code from
-	// faults.go and names the path, which is what proves the group prefix was
-	// taken off before the request arrived.
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		refuse(w, r, RouteNotFound.
-			New("this module serves no route at "+r.URL.Path).
-			With(fault.StringParam("path", r.URL.Path)))
+	handle("POST /settings/gadget", true, func(m *detection.Manager, w http.ResponseWriter, r *http.Request, _ string) {
+		var args struct {
+			Key string `json:"api_key"`
+		}
+		if !readBody(w, r, &args) {
+			return
+		}
+		if err := m.SaveKey(r.Context(), args.Key); err != nil {
+			safeError(w, err)
+			return
+		}
+		answer(w, 200, map[string]bool{"ok": true})
 	})
-
+	handle("POST /settings/connect", true, func(m *detection.Manager, w http.ResponseWriter, r *http.Request, _ string) {
+		var args struct {
+			URL   string `json:"url"`
+			Token string `json:"token"`
+		}
+		if !readBody(w, r, &args) {
+			return
+		}
+		if err := m.SaveCameraAccess(r.Context(), args.URL, args.Token); err != nil {
+			safeError(w, err)
+			return
+		}
+		answer(w, 200, map[string]bool{"ok": true})
+	})
+	handle("PUT /printers/{id}", true, func(m *detection.Manager, w http.ResponseWriter, r *http.Request, p string) {
+		var args detection.PrinterSettings
+		if !readBody(w, r, &args) {
+			return
+		}
+		if err := m.ConfigurePrinter(r.Context(), p, r.PathValue("id"), args); err != nil {
+			safeError(w, err)
+			return
+		}
+		answer(w, 200, map[string]bool{"ok": true})
+	})
+	handle("POST /printers/{id}/test-camera", true, func(m *detection.Manager, w http.ResponseWriter, r *http.Request, p string) {
+		if err := m.TestCamera(r.Context(), p, r.PathValue("id")); err != nil {
+			safeError(w, err)
+			return
+		}
+		answer(w, 200, map[string]bool{"ok": true})
+	})
+	mux.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
+		problem(w, 404, "ROUTE_NOT_FOUND", "This OctoEverywhere route does not exist.")
+	})
 	return mux
 }
 
-// answer writes one JSON body, which is every route above.
+func readBody(w http.ResponseWriter, r *http.Request, out any) bool {
+	r.Body = http.MaxBytesReader(w, r.Body, 16<<10)
+	defer r.Body.Close()
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(out); err != nil {
+		problem(w, 400, "INVALID_REQUEST", "The request is invalid or too large.")
+		return false
+	}
+	if err := decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
+		problem(w, 400, "INVALID_REQUEST", "Send one JSON object.")
+		return false
+	}
+	return true
+}
+
+func safeError(w http.ResponseWriter, err error) {
+	var apiErr *gadget.APIError
+	if errors.As(err, &apiErr) {
+		problem(w, 422, apiErr.Code, apiErr.Message)
+		return
+	}
+	if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
+		problem(w, 503, "REQUEST_TIMEOUT", "The request did not finish. Check the connection and try again.")
+		return
+	}
+	// Our adapters only return locally generated credential-free messages. Store
+	// and SDK errors are never forwarded because they can contain internal data.
+	message := err.Error()
+	if strings.Contains(message, "wirerpc:") {
+		message = "Connect could not save the change. Try again shortly."
+	}
+	problem(w, 422, "REQUEST_FAILED", message)
+}
 func answer(w http.ResponseWriter, status int, body any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-
 	_ = json.NewEncoder(w).Encode(body)
 }
+func problem(w http.ResponseWriter, status int, code, detail string) {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Cache-Control", "no-store")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(map[string]any{"type": "about:blank", "title": http.StatusText(status), "status": status, "code": code, "detail": detail})
+}
 
-// stdio is the pair the host handed over. Close shuts the reading half, which
-// is what ends a session whose host has gone quiet.
 type stdio struct{}
 
 func (stdio) Read(p []byte) (int, error)  { return os.Stdin.Read(p) }

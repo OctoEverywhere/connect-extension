@@ -35,7 +35,7 @@ export const holdHost = (host: ModuleHost): void => {
 /** The host a component reads. It throws rather than drawing an empty view. */
 export const heldHost = (): ModuleHost => {
   if (!held) {
-    throw new Error('the hello module drew before its setup ran');
+    throw new Error('OctoEverywhere drew before its setup ran');
   }
 
   return held;

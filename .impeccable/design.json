@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-17T17:29:35.440106+00:00",
+  "title": "Design System: OctoEverywhere Connect extension",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "OE blue",
+        "tonalRamp": [
+          "oklch(15% 0.1347 262.86)",
+          "oklch(26% 0.1347 262.86)",
+          "oklch(38% 0.1347 262.86)",
+          "oklch(49% 0.1347 262.86)",
+          "oklch(61% 0.1347 262.86)",
+          "oklch(72% 0.1347 262.86)",
+          "oklch(84% 0.1347 262.86)",
+          "oklch(95% 0.1347 262.86)"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Light OE blue",
+        "tonalRamp": [
+          "oklch(15% 0.0954 267.19)",
+          "oklch(26% 0.0954 267.19)",
+          "oklch(38% 0.0954 267.19)",
+          "oklch(49% 0.0954 267.19)",
+          "oklch(61% 0.0954 267.19)",
+          "oklch(72% 0.0954 267.19)",
+          "oklch(84% 0.0954 267.19)",
+          "oklch(95% 0.0954 267.19)"
+        ]
+      },
+      "action": {
+        "role": "primary",
+        "displayName": "OE indigo action",
+        "tonalRamp": [
+          "oklch(15% 0.2091 273.85)",
+          "oklch(26% 0.2091 273.85)",
+          "oklch(38% 0.2091 273.85)",
+          "oklch(49% 0.2091 273.85)",
+          "oklch(61% 0.2091 273.85)",
+          "oklch(72% 0.2091 273.85)",
+          "oklch(84% 0.2091 273.85)",
+          "oklch(95% 0.2091 273.85)"
+        ]
+      },
+      "action-hover": {
+        "role": "primary",
+        "displayName": "Pressed indigo",
+        "tonalRamp": [
+          "oklch(15% 0.1922 273.86)",
+          "oklch(26% 0.1922 273.86)",
+          "oklch(38% 0.1922 273.86)",
+          "oklch(49% 0.1922 273.86)",
+          "oklch(61% 0.1922 273.86)",
+          "oklch(72% 0.1922 273.86)",
+          "oklch(84% 0.1922 273.86)",
+          "oklch(95% 0.1922 273.86)"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Charcoal canvas",
+        "tonalRamp": [
+          "oklch(15% 0.0112 264.42)",
+          "oklch(26% 0.0112 264.42)",
+          "oklch(38% 0.0112 264.42)",
+          "oklch(49% 0.0112 264.42)",
+          "oklch(61% 0.0112 264.42)",
+          "oklch(72% 0.0112 264.42)",
+          "oklch(84% 0.0112 264.42)",
+          "oklch(95% 0.0112 264.42)"
+        ]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Dark account panel",
+        "tonalRamp": [
+          "oklch(15% 0.0078 264.44)",
+          "oklch(26% 0.0078 264.44)",
+          "oklch(38% 0.0078 264.44)",
+          "oklch(49% 0.0078 264.44)",
+          "oklch(61% 0.0078 264.44)",
+          "oklch(72% 0.0078 264.44)",
+          "oklch(84% 0.0078 264.44)",
+          "oklch(95% 0.0078 264.44)"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "White primary text",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(26% 0.0000 0.00)",
+          "oklch(38% 0.0000 0.00)",
+          "oklch(49% 0.0000 0.00)",
+          "oklch(61% 0.0000 0.00)",
+          "oklch(72% 0.0000 0.00)",
+          "oklch(84% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Supporting text",
+        "tonalRamp": [
+          "oklch(15% 0.0116 269.53)",
+          "oklch(26% 0.0116 269.53)",
+          "oklch(38% 0.0116 269.53)",
+          "oklch(49% 0.0116 269.53)",
+          "oklch(61% 0.0116 269.53)",
+          "oklch(72% 0.0116 269.53)",
+          "oklch(84% 0.0116 269.53)",
+          "oklch(95% 0.0116 269.53)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Divider",
+        "tonalRamp": [
+          "oklch(15% 0.0129 261.75)",
+          "oklch(26% 0.0129 261.75)",
+          "oklch(38% 0.0129 261.75)",
+          "oklch(49% 0.0129 261.75)",
+          "oklch(61% 0.0129 261.75)",
+          "oklch(72% 0.0129 261.75)",
+          "oklch(84% 0.0129 261.75)",
+          "oklch(95% 0.0129 261.75)"
+        ]
+      },
+      "good": {
+        "role": "semantic",
+        "displayName": "Healthy green",
+        "tonalRamp": [
+          "oklch(15% 0.1138 158.37)",
+          "oklch(26% 0.1138 158.37)",
+          "oklch(38% 0.1138 158.37)",
+          "oklch(49% 0.1138 158.37)",
+          "oklch(61% 0.1138 158.37)",
+          "oklch(72% 0.1138 158.37)",
+          "oklch(84% 0.1138 158.37)",
+          "oklch(95% 0.1138 158.37)"
+        ]
+      },
+      "warning": {
+        "role": "semantic",
+        "displayName": "Attention amber",
+        "tonalRamp": [
+          "oklch(15% 0.1055 79.03)",
+          "oklch(26% 0.1055 79.03)",
+          "oklch(38% 0.1055 79.03)",
+          "oklch(49% 0.1055 79.03)",
+          "oklch(61% 0.1055 79.03)",
+          "oklch(72% 0.1055 79.03)",
+          "oklch(84% 0.1055 79.03)",
+          "oklch(95% 0.1055 79.03)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Page headline",
+        "purpose": "The monitoring page title."
+      },
+      "title": {
+        "displayName": "Section title",
+        "purpose": "Account, printer-list and history headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "General interface content."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Forms and compact control labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 3px 14px #15171b14",
+        "purpose": "Support dark content panels on the charcoal canvas."
+      },
+      {
+        "name": "header",
+        "value": "0 2px 6px #15171b14",
+        "purpose": "Separate the charcoal brand bar from the page."
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-color",
+        "value": "150ms ease",
+        "purpose": "Subtle hover color feedback; removed for reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "setup-stack",
+        "value": "880px"
+      },
+      {
+        "name": "compact",
+        "value": "560px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The principal action in a form.",
+      "html": "<button class=\"ds-primary\">Save printer settings</button>",
+      "css": ".ds-primary{font-family:'OE Inter',Inter,Arial,sans-serif;font-size:13px;font-weight:600;border-radius:5px;padding:9px 15px;min-height:40px;cursor:pointer;transition:background-color .15s ease;background:linear-gradient(#0000001f,#0000001f),linear-gradient(90deg,#c257e1,#5865f2);color:#fff;border:1px solid transparent}.ds-primary:hover:not(:disabled){background:linear-gradient(#0000002e,#0000002e),linear-gradient(90deg,#c257e1,#5865f2)}.ds-primary:focus-visible{outline:2px solid #78a4fa;outline-offset:3px}.ds-primary:disabled{opacity:.55;cursor:not-allowed}"
+    },
+    {
+      "name": "Secondary button",
+      "kind": "button",
+      "description": "Configuration, refresh and camera-test actions.",
+      "html": "<button class=\"ds-secondary\">Test camera</button>",
+      "css": ".ds-secondary{font-family:'OE Inter',Inter,Arial,sans-serif;font-size:13px;font-weight:600;border-radius:5px;padding:9px 15px;min-height:40px;cursor:pointer;transition:background-color .15s ease;background:#405781;color:#fff;border:1px solid transparent}.ds-secondary:hover:not(:disabled){background:#4a6493;border-color:transparent}.ds-secondary:focus-visible{outline:2px solid #78a4fa;outline-offset:3px}.ds-secondary:disabled{opacity:.55;cursor:not-allowed}"
+    },
+    {
+      "name": "Text input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Clearly labeled credentials and numeric configuration.",
+      "html": "<label class=\"ds-label\" for=\"ds-token\">Gadget API key</label><input class=\"ds-input\" id=\"ds-token\" type=\"password\" aria-label=\"Gadget API key\" placeholder=\"Enter your key\" />",
+      "css": ".ds-label{display:block;font:600 13px 'OE Inter',Inter,Arial,sans-serif;margin-bottom:8px;color:#fff}.ds-input{font:400 14px 'OE Inter',Inter,Arial,sans-serif;border:1px solid #7d828d;border-radius:5px;background:#36393f;color:#fff;padding:10px 12px;min-height:43px}.ds-input::placeholder{color:#b7bbc4}.ds-input:focus-visible{outline:2px solid #78a4fa;outline-offset:3px}"
+    },
+    {
+      "name": "Account header",
+      "kind": "nav",
+      "description": "Charcoal brand bar within Connect; the host owns application navigation.",
+      "html": "<nav class=\"ds-nav\"><strong>OctoEverywhere</strong><a href=\"#docs\">Help &amp; docs</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px 30px;background:#292b2f;border-radius:8px 8px 0 0;box-shadow:0 2px 6px #15171b14;font-family:'OE Inter',Inter,Arial,sans-serif}.ds-nav strong{font-size:21px;font-weight:650;letter-spacing:-.025em;color:#fff}.ds-nav a{font-size:13px;color:#c1c4cc;text-decoration:none}.ds-nav a:hover{color:#78a4fa}.ds-nav a:focus-visible{outline:2px solid #78a4fa;outline-offset:3px}"
+    },
+    {
+      "name": "Account card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "A meaningful setup, printer or activity group.",
+      "html": "<section class=\"ds-card\"><h2>Your printers</h2><p>Choose what Gadget watches and how it responds.</p></section>",
+      "css": ".ds-card{background:#292b2f;color:#fff;border-radius:5px;box-shadow:0 3px 14px #15171b14;padding:25px;font-family:'OE Inter',Inter,Arial,sans-serif}.ds-card h2{font-size:20px;font-weight:700;line-height:1.3;margin:0;letter-spacing:-.015em}.ds-card p{font-size:13px;color:#c1c4cc;margin:6px 0 0;line-height:1.55}"
+    },
+    {
+      "name": "Monitoring status",
+      "kind": "custom",
+      "description": "Text carries state; a small color mark reinforces it.",
+      "html": "<span class=\"ds-status\"><span aria-hidden=\"true\"></span>Gadget is watching</span>",
+      "css": ".ds-status{display:inline-flex;align-items:center;gap:7px;color:#79d4a2;font:600 12px 'OE Inter',Inter,Arial,sans-serif}.ds-status>span{display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor}"
+    }
+  ],
+  "narrative": {
+    "northStar": "OctoEverywhere account pages",
+    "overview": "Follow the existing OE account pages: a flat charcoal canvas, darker floating boxes and matching header, white text, blue accents and the familiar purple CTA. The original OE and Gadget marks and locally bundled Inter carry the product's identity. Connect continues to own the surrounding application.",
+    "keyCharacteristics": [
+      "Charcoal surfaces with restrained tonal separation.",
+      "Original OE artwork, blue links and purple actions.",
+      "Clear forms, descriptive states, and compact printer facts."
+    ],
+    "rules": [
+      {
+        "name": "The Scoped Surface Rule",
+        "body": "Apply extension colors only inside the module; preserve Connect's surrounding interface and navigation.",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "Do preserve the original OE and Gadget artwork and Inter typography.",
+      "Do pair state colors with readable labels and useful recovery instructions.",
+      "Do keep editable printer settings with their printer and account credentials in connection settings."
+    ],
+    "donts": [
+      "Don't replace the existing OE charcoal surfaces and original brand assets with an unrelated visual identity.",
+      "Don't claim that Gadget is watching, a key is verified, or a printer has paused unless the backend reports that state.",
+      "Don't restyle Connect outside the extension's own surface."
+    ]
+  }
+}

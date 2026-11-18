@@ -24,7 +24,7 @@ import (
 // namespace, which is what keeps this module's codes apart from the server's.
 //
 //nolint:gochecknoglobals // a domain built once at start-up; a const cannot hold one.
-var faultDomain = mustDomain("com.github.aux.prusa3d.prusa-connect-extension-example")
+var faultDomain = mustDomain("com.github.aux.octoeverywhere.connect-extension")
 
 // The codes this module raises. Add a code here, and nowhere else, so the list
 // a client branches on is one file.
@@ -47,7 +47,7 @@ var (
 func mustDomain(name string) fault.Domain {
 	domain, err := fault.NewDomain(name)
 	if err != nil {
-		panic(fmt.Sprintf("hello: %s is not a fault domain: %v", name, err))
+		panic(fmt.Sprintf("octoeverywhere: %s is not a fault domain: %v", name, err))
 	}
 
 	return domain

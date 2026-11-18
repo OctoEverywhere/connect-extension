@@ -1,4 +1,4 @@
-module github.com/prusa3d/prusa-connect-extension-example
+module github.com/octoeverywhere/connect-extension
 
 go 1.26.11
 

@@ -25,7 +25,7 @@ PLATFORMS := $(shell sh scripts/platforms.sh)
 RELEASE := release
 export CI ?= true
 
-.PHONY: core client client-check check go-check ui-check ui-build release install clean
+.PHONY: core client client-check check manifest-check go-check ui-check ui-build release install clean
 
 # The checkout is cloned once. To move to another CORE_REF, `rm -rf .core`
 # first.
@@ -45,24 +45,27 @@ $(CORE)/packages/typescript/dist/index.js: | $(CORE)/.git
 
 core: $(CORE)/packages/svelte/dist/build/module.js $(CORE)/packages/typescript/dist/index.js
 
-check: go-check client-check ui-check
+check: manifest-check go-check client-check ui-check
+
+manifest-check: core
+	go -C $(CORE) run "$(CURDIR)/scripts/check-manifest.go" "$(CURDIR)"
 
 go-check: core
 	go vet ./...
 	go test ./...
 
-# The typed client the page calls GET /hello with. It is generated from
+# The typed client for the monitoring routes. It is generated from
 # openapi.json, the same fragment the process embeds, and committed.
 client: core
 	go -C $(CORE) run ./cmd/generate-client-sdk -module -document "$(CURDIR)/openapi.json" \
-		-namespace $(NAMESPACE) -name hello-client -out "$(CURDIR)/client"
+		-namespace $(NAMESPACE) -name octoeverywhere-client -out "$(CURDIR)/client"
 	cd client && pnpm install --frozen-lockfile && pnpm run generate:types
 
 # Fails when openapi.json changed and nobody ran `make client`.
 client-check: client/node_modules/.modules.yaml
 	go -C $(CORE) run ./cmd/generate-client-sdk -module -check -document "$(CURDIR)/openapi.json" \
-		-namespace $(NAMESPACE) -name hello-client -out "$(CURDIR)/client"
-	cd client && pnpm run generate:types && git diff --exit-code src/generated/
+		-namespace $(NAMESPACE) -name octoeverywhere-client -out "$(CURDIR)/client"
+	node scripts/check-client.mjs
 
 client/node_modules/.modules.yaml: client/package.json client/pnpm-lock.yaml | core
 	cd client && pnpm install --frozen-lockfile
@@ -86,7 +89,9 @@ ui-build: ui/node_modules/.modules.yaml
 release: ui-build core
 	rm -rf $(RELEASE)
 	cp -R ui/dist $(RELEASE)
-	cp LICENSE README.md CHANGELOG.md $(RELEASE)/
+	cp LICENSE README.md CHANGELOG.md openapi.json $(RELEASE)/
+	mkdir -p $(RELEASE)/docs
+	cp docs/release-validation.md docs/verified-build.md docs/local-testing.md $(RELEASE)/docs/
 	@for platform in $(PLATFORMS); do \
 		goos=$${platform%%_*}; goarch=$${platform#*_}; \
 		binary=$(NAME)_$$platform; [ $$goos = windows ] && binary=$$binary.exe; \
@@ -108,7 +113,8 @@ install: release
 	@echo
 	@echo "Installed. Build the core with its web app once:  make -C $(CORE) build"
 	@echo "Then start it:                                    (cd $(TRY) && $(CURDIR)/$(CORE)/bin/server -config config.yaml)"
-	@echo "Finish the first run at http://127.0.0.1:18480 with the setup code it logs, and open Hello in the sidebar."
+	@echo "Finish the first run at http://127.0.0.1:18480 with the setup code it logs, and open OctoEverywhere in the sidebar."
+	@echo "Set the module's connect_url to http://127.0.0.1:18480 before saving its camera credential."
 
 clean:
 	rm -rf $(RELEASE) bin ui/dist ui/node_modules client/dist client/node_modules

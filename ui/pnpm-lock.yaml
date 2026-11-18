@@ -19,7 +19,7 @@ importers:
       '@prusa/connect-ui':
         specifier: link:../.core/packages/svelte
         version: link:../.core/packages/svelte
-      hello-client:
+      octoeverywhere-client:
         specifier: link:../client
         version: link:../client
     devDependencies:
