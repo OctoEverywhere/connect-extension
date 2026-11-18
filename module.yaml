@@ -1,11 +1,11 @@
 # Namespace is derived from github.com/octoeverywhere/connect-extension:
 # com.github.aux.octoeverywhere.connect-extension.
 name: octoeverywhere
-title: AI Print Failure Detection
+title: AI Failure Detection
 kind: sink
-version: 0.1.0
+version: 0.1.1
 license: MIT
-summary: Free Gadget AI print failure detection with per-printer monitoring and optional automatic pause.
+summary: Gadget AI print failure detection with per-printer monitoring and optional automatic pause.
 codeowner: OctoEverywhere
 lifecycle: beta
 contract_major: 1
@@ -51,7 +51,7 @@ egress:
   - host: "*.octoeverywhere.com"
     ports: [443]
     from: process
-    why: Sends selected camera snapshots to Gadget and manages one analysis context per print.
+    why: Analyzes selected camera snapshots for print failures. Gadget deletes images immediately after processing; never retains them, uses them for training, or sells them.
     sends: JPEG snapshots, confidence settings, and private print context IDs; the Gadget API key is sent only when creating a context.
   - option: connect_url
     ports: [80, 443, 8080, 8443, 18480]

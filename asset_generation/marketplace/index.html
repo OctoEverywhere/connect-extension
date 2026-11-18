@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OctoEverywhere · Marketplace artwork</title>
+  <link rel="stylesheet" href="artwork.css">
+</head>
+<body>
+  <nav class="preview-nav" aria-label="Artwork">
+    <a href="?slide=cover">Cover</a>
+    <a href="?slide=monitoring">Monitoring</a>
+    <a href="?slide=pause">Automatic pausing</a>
+    <a id="export-link" href="?slide=cover&amp;export=1">Open full-size artwork</a>
+  </nav>
+  <main id="frame">
+    <article class="artwork cover" data-slide="cover" aria-label="Gadget AI failure detection cover">
+      <header class="brand"><img src="assets/octoeverywhere.svg" alt=""><span>OctoEverywhere</span></header>
+      <div class="cover-copy">
+        <h1>AI print failure<br>detection.</h1>
+        <p class="cover-intro">Meet <strong>Gadget.</strong></p>
+        <p class="cover-detail">An extra set of eyes<br>for your 3D prints.</p>
+      </div>
+      <div class="character-panel"><img class="full-gadget" src="assets/gadget-full.svg" alt="Gadget, OctoEverywhere’s smiling blue robot"></div>
+      <footer><span>Made for <strong>Prusa Connect Local</strong></span><span class="footer-right">Powered by Gadget AI</span></footer>
+    </article>
+
+    <article class="artwork monitoring" data-slide="monitoring" hidden aria-label="Gadget camera monitoring">
+      <header class="brand"><img src="assets/octoeverywhere.svg" alt=""><span>OctoEverywhere</span></header>
+      <div class="monitor-visual">
+        <img src="assets/gadget-head.svg" class="head-gadget" alt="Gadget’s smiling face">
+        <div class="snapshot-path">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 14h8l4-6h10l4 6h8v26H7z"/><circle cx="24" cy="26" r="8"/></svg>
+          <span>Camera snapshots</span>
+          <svg class="path-arrow" viewBox="0 0 56 24" aria-hidden="true"><path d="M2 12h48M41 3l9 9-9 9"/></svg>
+          <span>Gadget AI</span>
+        </div>
+      </div>
+      <div class="monitor-copy">
+        <h1>An extra eye<br>on your prints.</h1>
+        <p class="description">Gadget checks your camera snapshots<br>for signs of a failing print.</p>
+        <ul class="feature-lines">
+          <li><span class="feature-dot"></span>Checks active prints</li>
+          <li><span class="feature-dot"></span>Waits through a warm-up buffer</li>
+          <li><span class="feature-dot"></span>Adjusts to each printer’s settings</li>
+        </ul>
+      </div>
+      <footer><span>AI failure detection for <strong>Prusa Connect Local</strong></span><span class="footer-right">Your camera. Gadget’s AI.</span></footer>
+    </article>
+
+    <article class="artwork pause" data-slide="pause" hidden aria-label="Optional automatic pausing">
+      <header class="brand"><img src="assets/octoeverywhere.svg" alt=""><span>OctoEverywhere</span></header>
+      <div class="pause-copy">
+        <h1>Automatic pausing.<br><span>Your choice.</span></h1>
+        <p class="description">Let Gadget request a pause<br>when it detects a likely failure.</p>
+        <p class="default-off">Optional. Off by default.</p>
+        <p class="pause-note">Enable per printer. Set your confidence level.<br>Requires permission to pause the printer.</p>
+      </div>
+      <div class="pause-visual" aria-hidden="true">
+        <div class="pause-symbol"><span></span><span></span></div>
+        <div class="gadget-signature"><img src="assets/gadget-head.svg" alt=""><span>Gadget AI</span></div>
+      </div>
+      <footer><span>Made for <strong>Prusa Connect Local</strong></span><span class="footer-right">AI assistance. You’re in control.</span></footer>
+    </article>
+  </main>
+  <script src="preview.js"></script>
+</body>
+</html>

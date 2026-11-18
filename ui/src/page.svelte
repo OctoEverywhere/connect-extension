@@ -124,9 +124,9 @@
               <p>{t('setup.privacyBody')}</p>
               <a
                 class="oe-text-link"
-                href="https://octoeverywhere.com/gadgetapi"
+                href="https://octoeverywhere.com/privacy"
                 target="_blank"
-                rel="noopener noreferrer">{t('setup.usageLink')}</a
+                rel="noopener noreferrer">{t('setup.privacyLink')}</a
               >
             </div>
           </aside>

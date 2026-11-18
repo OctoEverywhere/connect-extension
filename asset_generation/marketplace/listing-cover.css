@@ -1,0 +1,44 @@
+@font-face {
+  font-family: "OE Inter";
+  src: url("assets/inter.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: block;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #292b2f; }
+body { width: 1536px; height: 990px; }
+.frame { width: 1536px; height: 990px; overflow: hidden; }
+.cover {
+  position: relative;
+  width: 512px;
+  height: 330px;
+  transform: scale(3);
+  transform-origin: top left;
+  background: #292b2f;
+  color: #fff;
+  font-family: "OE Inter", Inter, Arial, sans-serif;
+}
+h1 {
+  position: absolute;
+  left: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  font-size: 52px;
+  font-weight: 780;
+  line-height: 1.05;
+  letter-spacing: -.035em;
+  word-spacing: 2px;
+}
+.gadget {
+  position: absolute;
+  left: 286px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 206px;
+  height: 141px;
+  object-fit: contain;
+}
+body.thumbnail, .thumbnail .frame { width: 256px; height: 165px; }
+.thumbnail .cover { transform: scale(.5); }
+::selection { color: #292b2f; background: #78a4fa; }

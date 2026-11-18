@@ -1,6 +1,6 @@
 {
   "name": "octoeverywhere-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Typed client for the OctoEverywhere Gadget monitoring extension for Prusa Connect Local.",
   "type": "module",
   "sideEffects": false,

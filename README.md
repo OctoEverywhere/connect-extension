@@ -2,11 +2,23 @@
 
 Gadget AI print failure detection inside Prusa Connect Local. Select a camera for each printer, enable monitoring, and optionally let Gadget pause a print when it recommends intervention.
 
+**Your print images stay yours.** OctoEverywhere has a strict image privacy policy for the Gadget API: images are deleted immediately after processing. They are **never retained after processing, used for AI training, or sold**. [Read the privacy policy](https://octoeverywhere.com/privacy).
+
 This is a standalone native Go extension with a Svelte page. The first beta uses the [Gadget public API](https://docs.octoeverywhere.com/ai-failure-detection-apis/overview/); remote access and the broader OctoEverywhere notification service are future work. It requires no fork of the OctoEverywhere plugin and no Python runtime.
 
 Module: `github.com/octoeverywhere/connect-extension`
 Derived namespace: `com.github.aux.octoeverywhere.connect-extension`
 Prusa Connect: `>=0.1.0-beta.1`
+
+## Image privacy
+
+Privacy matters to the 3D printing community, and it matters to us. Camera snapshots sent through this extension go to OctoEverywhere's Gadget API over HTTPS for AI failure analysis, under its strict image privacy rules:
+
+- **Deleted immediately after processing.** Each image is used only for its individual analysis request and deleted when that request finishes. Images are not stored afterward, archived, or kept for the rest of a print.
+- **Never used for training.** Images are not used to train, retrain, fine-tune, or improve AI models, including as anonymized copies or future training data.
+- **Never sold or reused.** Images are used only to provide the requested failure analysis.
+
+These protections apply to both free and paid Gadget API use. The extension processes snapshots in memory and does not save image files. Settings, credentials, detection results, and activity history are separate from the images and are retained where needed to operate the extension and API. See the [repository's data-handling details](https://github.com/OctoEverywhere/connect-extension/blob/main/PRIVACY.md) and the **Gadget Developer API** section of [OctoEverywhere's privacy policy](https://octoeverywhere.com/privacy).
 
 ## Setup
 
@@ -92,7 +104,7 @@ The PowerShell script also accepts `Core` and `UIBuild`. It restores temporary G
 After building, install into the same Connect configuration directory your server uses:
 
 ```sh
-prusa-connect module add github.com/octoeverywhere/connect-extension@0.1.0 -from ./release -approve
+prusa-connect module add github.com/octoeverywhere/connect-extension@0.1.1 -from ./release -approve
 ```
 
 This approves the private data directory and fleet observation. The installer reports that `operate` needs a per-printer grant; follow the automatic-pause setup above if you want that feature.
@@ -110,6 +122,8 @@ Automated tests use local HTTP servers and fake host adapters. They do not requi
 See [the completed build and host checks](https://github.com/OctoEverywhere/connect-extension/blob/main/docs/verified-build.md) for the tested environment, results, and remaining validation.
 
 The GitHub workflows retain Prusa's marketplace build/sign/attestation process. A GitHub release tagged `v<manifest version>` triggers the publish workflow; a local `Release` build does not publish anything. Before publishing, configure the public repository, marketplace author identity/trusted publisher, release environment, and `PRUSA_CONNECT_EXTENSION_SIGNING_KEY` as described in [Prusa's extension docs](https://plugin-marketplace.prusa3d.com/docs/connect).
+
+The marketplace's short description comes from `module.yaml`; the detailed text alongside each version comes from the release notes. The publish workflow automatically includes the image privacy statement before the GitHub release body so it remains visible on the marketplace profile. The README ships in the release archive; `PRIVACY.md` remains repository documentation. Publishing is still required to update the public listing.
 
 ## Code layout
 

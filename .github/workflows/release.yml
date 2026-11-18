@@ -14,6 +14,14 @@ jobs:
       path: .
       bundle-command: make ui-build
       core-ref: v0.1.0-beta.1 # Prusa Connect into .core/, until the SDK is published
+      # The marketplace displays this text alongside each version. Keep the
+      # image privacy promise visible even when the GitHub body is brief.
+      changelog: |
+        ### Your print images stay yours
+
+        OctoEverywhere follows a strict image privacy policy for the Gadget API. Images submitted by this extension are used only for the requested AI failure analysis and deleted immediately after processing, when the request finishes. They are never stored afterward, used for training or fine-tuning (including anonymized copies), or sold. These protections apply to free and paid API use. [Read OctoEverywhere's privacy policy](https://octoeverywhere.com/privacy).
+
+        ${{ github.event.release.body }}
     # The environment `release` holds PRUSA_CONNECT_EXTENSION_SIGNING_KEY. Pass it
     # by name: `secrets: inherit` does not reach the builder, which lives in
     # another organisation (prusa3d).

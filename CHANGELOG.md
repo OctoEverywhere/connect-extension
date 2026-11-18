@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.1 - 2026-11-17
+
+### Changed
+
+- Made Gadget API image privacy prominent in the README, marketplace summary and release text, and setup notice: images are deleted immediately after processing, never retained afterward, used for training, or sold.
+- Added repository data-handling documentation and direct links to OctoEverywhere's privacy policy.
+
+### Added
+
+- Marketplace cover artwork, a dark-mode Connect UI screenshot, and editable asset sources in `asset_generation/`.
+
 ## 0.1.0 - 2026-11-17
 
 ### Added

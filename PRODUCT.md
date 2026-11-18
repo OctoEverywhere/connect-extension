@@ -29,6 +29,7 @@ The extension is a native Go process supervised by Prusa Connect Local, with a S
 - Remote access and OE notifications are future features, not capabilities of this version.
 - This version does not fork or depend on the main OE Python plugin. Future reuse must preserve that code as a separate dependency rather than an independent fork.
 - Keep credentials server-side after setup. The module browser uses the host's session client and never creates an independent transport.
+- Image privacy is a core commitment: Gadget API snapshots are used only for the individual inference request and deleted immediately after processing. They are never retained afterward, used for training or fine-tuning (including anonymized copies), or sold. Keep this promise prominent in the README, marketplace text, and setup notice, with a link to https://octoeverywhere.com/privacy. Distinguish images from retained credentials, settings, results, and account/usage records.
 
 ## Brand Commitments
 
