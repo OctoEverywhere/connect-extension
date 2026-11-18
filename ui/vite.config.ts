@@ -18,9 +18,6 @@ import { moduleBuild, moduleDev } from '@prusa/connect-ui/build';
 const BUNDLE_ROOT = fileURLToPath(new URL('./dist/', import.meta.url));
 const MANIFEST = fileURLToPath(new URL('../module.yaml', import.meta.url));
 const LOCALES = fileURLToPath(new URL('./src/locales/', import.meta.url));
-const FONT_LICENSE = fileURLToPath(
-  new URL('./src/assets/Inter-LICENSE.txt', import.meta.url),
-);
 
 /**
  * Puts the module's own manifest at the root of the bundle, which is where the
@@ -48,8 +45,8 @@ const bundleManifest = () => ({
       // `locales/<lang>.json` next to `entry_url` and merges what it finds
       // under this module's namespace (frontend-i18n.md rule 7).
       cpSync(LOCALES, `${BUNDLE_ROOT}ui/locales`, { recursive: true });
-      // The font is embedded in the bundle; keep its OFL attribution beside it.
-      copyFileSync(FONT_LICENSE, `${BUNDLE_ROOT}ui/Inter-LICENSE.txt`);
+      // The embedded font's OFL notice ships in the root LICENSE: the
+      // marketplace allows only runtime assets inside ui/.
     },
   },
 });

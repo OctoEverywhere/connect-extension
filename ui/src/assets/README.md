@@ -8,4 +8,4 @@ These assets are copied from the existing OctoEverywhere website source, not gen
 
 The marks retain their original artwork and colors. The interface follows the actual OE website's charcoal canvas and darker account cards, with Inter typography, white text, blue accents and the existing purple CTA. The files are bundled locally; rendering makes no external asset request.
 
-Inter is licensed under the SIL Open Font License 1.1. `Inter-LICENSE.txt` is copied from [the official Inter repository](https://github.com/rsms/inter/blob/master/LICENSE.txt) (Git blob `9b2ca37b3ffc77391d8b2ebef4a974ef32bf46ea`) and included beside the released UI bundle.
+Inter is licensed under the SIL Open Font License 1.1. `Inter-LICENSE.txt` is copied from [the official Inter repository](https://github.com/rsms/inter/blob/master/LICENSE.txt) (Git blob `9b2ca37b3ffc77391d8b2ebef4a974ef32bf46ea`). Its complete notice is also included in the root `LICENSE`, which ships in every release; the marketplace does not permit separate text files inside `ui/`.

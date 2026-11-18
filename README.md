@@ -103,11 +103,11 @@ Generated client consistency is checked against the current OpenAPI document rat
 
 ## Release validation
 
-To test without a physical printer, follow [local testing with Prusa's simulated fleet](docs/local-testing.md). The PowerShell runner builds and installs this extension into an isolated local Connect demo.
+To test without a physical printer, follow [local testing with Prusa's simulated fleet](https://github.com/OctoEverywhere/connect-extension/blob/main/docs/local-testing.md). The PowerShell runner builds and installs this extension into an isolated local Connect demo.
 
-Automated tests use local HTTP servers and fake host adapters. They do not require a Gadget key or billable image requests. Before making this beta public, complete the live acceptance checks in [docs/release-validation.md](docs/release-validation.md), including an actual camera/print lifecycle, pause confirmation, permission boundaries, and host restart.
+Automated tests use local HTTP servers and fake host adapters. They do not require a Gadget key or billable image requests. Before making this beta public, complete the live acceptance checks in [docs/release-validation.md](https://github.com/OctoEverywhere/connect-extension/blob/main/docs/release-validation.md), including an actual camera/print lifecycle, pause confirmation, permission boundaries, and host restart.
 
-See [the completed build and host checks](docs/verified-build.md) for the tested environment, results, and remaining validation.
+See [the completed build and host checks](https://github.com/OctoEverywhere/connect-extension/blob/main/docs/verified-build.md) for the tested environment, results, and remaining validation.
 
 The GitHub workflows retain Prusa's marketplace build/sign/attestation process. A GitHub release tagged `v<manifest version>` triggers the publish workflow; a local `Release` build does not publish anything. Before publishing, configure the public repository, marketplace author identity/trusted publisher, release environment, and `PRUSA_CONNECT_EXTENSION_SIGNING_KEY` as described in [Prusa's extension docs](https://plugin-marketplace.prusa3d.com/docs/connect).
 

@@ -87,13 +87,10 @@ if ($releasePath -ne (Join-Path $repoRoot 'release') -or
 }
 if (Test-Path -LiteralPath $releasePath) { Remove-Item -LiteralPath $releasePath -Recurse -Force }
 Copy-Item -LiteralPath (Join-Path $repoRoot 'ui/dist') -Destination $releasePath -Recurse
-foreach ($file in @('LICENSE', 'README.md', 'CHANGELOG.md', 'openapi.json')) {
+# Match the marketplace allowlist. OpenAPI is embedded in the program;
+# developer documentation stays in the source repository.
+foreach ($file in @('LICENSE', 'README.md', 'CHANGELOG.md')) {
     Copy-Item -LiteralPath (Join-Path $repoRoot $file) -Destination $releasePath
-}
-$releaseDocs = Join-Path $releasePath 'docs'
-New-Item -ItemType Directory -Path $releaseDocs -Force | Out-Null
-foreach ($document in @('release-validation.md', 'verified-build.md', 'local-testing.md')) {
-    Copy-Item -LiteralPath (Join-Path $repoRoot "docs/$document") -Destination $releaseDocs
 }
 
 $manifestLines = Get-Content -LiteralPath (Join-Path $repoRoot 'module.yaml')

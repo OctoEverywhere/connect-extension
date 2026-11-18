@@ -89,9 +89,9 @@ ui-build: ui/node_modules/.modules.yaml
 release: ui-build core
 	rm -rf $(RELEASE)
 	cp -R ui/dist $(RELEASE)
-	cp LICENSE README.md CHANGELOG.md openapi.json $(RELEASE)/
-	mkdir -p $(RELEASE)/docs
-	cp docs/release-validation.md docs/verified-build.md docs/local-testing.md $(RELEASE)/docs/
+	# Match the marketplace allowlist. OpenAPI is embedded in the program;
+	# developer documentation stays in the source repository.
+	cp LICENSE README.md CHANGELOG.md $(RELEASE)/
 	@for platform in $(PLATFORMS); do \
 		goos=$${platform%%_*}; goarch=$${platform#*_}; \
 		binary=$(NAME)_$$platform; [ $$goos = windows ] && binary=$$binary.exe; \
